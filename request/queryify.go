@@ -2,7 +2,7 @@ package request
 
 import (
 	"fmt"
-	"mutils/util"
+	"github.com/mjgaga/go_mutils/util"
 	"net/url"
 	"reflect"
 	"strings"
