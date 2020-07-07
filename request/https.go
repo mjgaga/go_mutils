@@ -138,18 +138,12 @@ func (this *HttpsClient) Delete(url string, ch chan *Result, headers ...*Header)
 	ch <- r
 }
 
-func NewHttpsClient(caFiles ...string) (*HttpsClient, error) {
+func NewHttpsClientWithByte(certBytes []byte) (*HttpsClient, error) {
 	clientCertPool := x509.NewCertPool()
 
-	for _, caFile := range caFiles {
-		certBytes, err := ioutil.ReadFile(caFile)
-		if err != nil {
-			return nil, errors.New("Unable to read cert.pem: " + err.Error())
-		}
-		ok := clientCertPool.AppendCertsFromPEM(certBytes)
-		if !ok {
-			return nil, errors.New("failed to parse root certificate")
-		}
+	ok := clientCertPool.AppendCertsFromPEM(certBytes)
+	if !ok {
+		return nil, errors.New("failed to parse root certificate")
 	}
 
 	httpClient := &HttpsClient{
@@ -171,4 +165,13 @@ func NewHttpsClient(caFiles ...string) (*HttpsClient, error) {
 	}
 
 	return httpClient, nil
+}
+
+func NewHttpsClient(caFile string) (*HttpsClient, error) {
+	certBytes, err := ioutil.ReadFile(caFile)
+	if err != nil {
+		return nil, errors.New("Unable to read cert.pem: " + err.Error())
+	}
+
+	return NewHttpsClientWithByte(certBytes)
 }

@@ -138,24 +138,15 @@ func (this *HttpsClientX509) Delete(url string, ch chan *Result, headers ...*Hea
 	ch <- r
 }
 
-func NewHttpsClientX509(caFile, certFile, keyFile string) (*HttpsClientX509, error) {
-	certBytes, err := ioutil.ReadFile(caFile)
-	if err != nil {
-		return nil, errors.New("Unable to read cert.pem: " + err.Error())
-	}
-
+func NewHttpsClientX509WithBytes(caBytes, certBytes, keyData []byte) (*HttpsClientX509, error) {
 	clientCertPool := x509.NewCertPool()
-	ok := clientCertPool.AppendCertsFromPEM(certBytes)
-
-	if !ok {
+	if ok := clientCertPool.AppendCertsFromPEM(caBytes); !ok {
 		return nil, errors.New("failed to parse root certificate")
 	}
-
-	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+	cert, err := tls.X509KeyPair(certBytes, keyData)
 	if err != nil {
 		return nil, err
 	}
-
 	httpClient := &HttpsClientX509{
 		client: http.Client{
 			// CheckRedirect: func(req *http.Request, via []*http.Request) error {
@@ -176,4 +167,28 @@ func NewHttpsClientX509(caFile, certFile, keyFile string) (*HttpsClientX509, err
 	}
 
 	return httpClient, nil
+}
+
+func NewHttpsClientX509(caFile, certFile, keyFile string) (*HttpsClientX509, error) {
+	certBytes, err := ioutil.ReadFile(caFile)
+	if err != nil {
+		return nil, errors.New("Unable to read cert.pem: " + err.Error())
+	}
+
+	clientCertPool := x509.NewCertPool()
+	ok := clientCertPool.AppendCertsFromPEM(certBytes)
+
+	if !ok {
+		return nil, errors.New("failed to parse root certificate")
+	}
+
+	certPEMBlock, err := ioutil.ReadFile(certFile)
+	if err != nil {
+		return nil, err
+	}
+	keyPEMBlock, err := ioutil.ReadFile(keyFile)
+	if err != nil {
+		return nil, err
+	}
+	return NewHttpsClientX509WithBytes(certBytes, certPEMBlock, keyPEMBlock)
 }
