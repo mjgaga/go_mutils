@@ -39,13 +39,9 @@ func (this *HttpsClientX509) Get(url string, ch chan *Result, headers ...*Header
 	data, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 
-	if res.StatusCode == http.StatusOK {
-		r.Error = err
-		r.Result = data
-	} else {
-		r.Error = errors.New(string(data))
-		r.Result = nil
-	}
+	r.Error = err
+	r.Result = data
+	r.StatusCode = res.StatusCode
 
 	ch <- r
 }
@@ -72,6 +68,7 @@ func (this *HttpsClientX509) Post(url string, body string, ch chan *Result, head
 
 	r.Error = err
 	r.Result = data
+	r.StatusCode = res.StatusCode
 
 	ch <- r
 }
@@ -99,6 +96,7 @@ func (this *HttpsClientX509) Patch(url string, body string, ch chan *Result, hea
 
 	r.Error = err
 	r.Result = data
+	r.StatusCode = res.StatusCode
 
 	ch <- r
 }
@@ -127,13 +125,9 @@ func (this *HttpsClientX509) Delete(url string, ch chan *Result, headers ...*Hea
 	data, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 
-	if res.StatusCode == http.StatusOK {
-		r.Error = err
-		r.Result = data
-	} else {
-		r.Error = errors.New(string(data))
-		r.Result = nil
-	}
+	r.Error = err
+	r.Result = data
+	r.StatusCode = res.StatusCode
 
 	ch <- r
 }

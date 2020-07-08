@@ -31,6 +31,7 @@ func (this *HttpClient) Get(url string, ch chan *Result, headers ...*Header) {
 
 	r.Error = err
 	r.Result = data
+	r.StatusCode = res.StatusCode
 
 	ch <- r
 }
@@ -55,6 +56,7 @@ func (this *HttpClient) Post(url string, body string, ch chan *Result, headers .
 
 	r.Error = err
 	r.Result = data
+	r.StatusCode = res.StatusCode
 
 	ch <- r
 }
@@ -79,6 +81,7 @@ func (this *HttpClient) Patch(url string, body string, ch chan *Result, headers 
 
 	r.Error = err
 	r.Result = data
+	r.StatusCode = res.StatusCode
 
 	ch <- r
 }
@@ -102,6 +105,7 @@ func (this *HttpClient) Delete(url string, ch chan *Result, headers ...*Header) 
 
 	r.Error = err
 	r.Result = data
+	r.StatusCode = res.StatusCode
 
 	ch <- r
 }

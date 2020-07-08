@@ -9,8 +9,9 @@ type Request interface {
 }
 
 type Result struct {
-	Result []byte
-	Error  error
+	Result     []byte
+	Error      error
+	StatusCode int
 }
 
 type Header struct {
