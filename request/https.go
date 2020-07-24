@@ -49,7 +49,6 @@ func (this *HttpsClient) Get(url string, ch chan *Result, headers ...*Header) {
 func (this *HttpsClient) Post(url string, body string, ch chan *Result, headers ...*Header) {
 	bodyReader := strings.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPost, url, bodyReader)
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	for _, head := range headers {
 		req.Header.Set(head.Key, head.Value)
@@ -76,8 +75,6 @@ func (this *HttpsClient) Post(url string, body string, ch chan *Result, headers 
 func (this *HttpsClient) Patch(url string, body string, ch chan *Result, headers ...*Header) {
 	bodyReader := strings.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPatch, url, bodyReader)
-
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	for _, head := range headers {
 		req.Header.Set(head.Key, head.Value)

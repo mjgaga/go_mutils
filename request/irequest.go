@@ -2,6 +2,11 @@ package request
 
 import "net/http"
 
+var (
+	ContextTypeHeaderJson = &Header{Key: "Content-Type", Value: "application/json"}
+	ContextTypeHeaderForm = &Header{Key: "Content-Type", Value: "application/x-www-form-urlencoded"}
+)
+
 type Request interface {
 	Get(url string, ch chan *Result, headers ...*Header)
 	Post(url string, body string, ch chan *Result, headers ...*Header)
