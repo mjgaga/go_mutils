@@ -129,6 +129,34 @@ func (this *HttpsClient) Delete(url string, ch chan *Result, headers ...*Header)
 	ch <- r
 }
 
+func (this *HttpsClient) SyncGet(url string, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	ch := make(chan *Result, 1)
+	go this.Get(url, ch, headers...)
+	res := <-ch
+	return res.Result, res.StatusCode, res.Error
+}
+
+func (this *HttpsClient) SyncPost(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	ch := make(chan *Result, 1)
+	go this.Post(url, body, ch, headers...)
+	res := <-ch
+	return res.Result, res.StatusCode, res.Error
+}
+
+func (this *HttpsClient) SyncPatch(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	ch := make(chan *Result, 1)
+	go this.Patch(url, body, ch, headers...)
+	res := <-ch
+	return res.Result, res.StatusCode, res.Error
+}
+
+func (this *HttpsClient) SyncDelete(url string, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	ch := make(chan *Result, 1)
+	go this.Delete(url, ch, headers...)
+	res := <-ch
+	return res.Result, res.StatusCode, res.Error
+}
+
 func NewHttpsClientWithByte(certBytes []byte) (*HttpsClient, error) {
 	clientCertPool := x509.NewCertPool()
 

@@ -110,6 +110,34 @@ func (this *HttpClient) Delete(url string, ch chan *Result, headers ...*Header) 
 	ch <- r
 }
 
+func (this *HttpClient) SyncGet(url string, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	ch := make(chan *Result, 1)
+	go this.Get(url, ch, headers...)
+	res := <-ch
+	return res.Result, res.StatusCode, res.Error
+}
+
+func (this *HttpClient) SyncPost(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	ch := make(chan *Result, 1)
+	go this.Post(url, body, ch, headers...)
+	res := <-ch
+	return res.Result, res.StatusCode, res.Error
+}
+
+func (this *HttpClient) SyncPatch(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	ch := make(chan *Result, 1)
+	go this.Patch(url, body, ch, headers...)
+	res := <-ch
+	return res.Result, res.StatusCode, res.Error
+}
+
+func (this *HttpClient) SyncDelete(url string, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	ch := make(chan *Result, 1)
+	go this.Delete(url, ch, headers...)
+	res := <-ch
+	return res.Result, res.StatusCode, res.Error
+}
+
 func NewHttpClient() *HttpClient {
 	return &HttpClient{
 		client: http.Client{
