@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 )
 
-func Encrypt(text string, key []byte) (string, error) {
+func Encrypt(text []byte, key []byte) (string, error) {
 	var iv = key[:aes.BlockSize]
 	encrypted := make([]byte, len(text))
 	block, err := aes.NewCipher(key)
@@ -14,11 +14,14 @@ func Encrypt(text string, key []byte) (string, error) {
 		return "", err
 	}
 	encrypter := cipher.NewCFBEncrypter(block, iv)
-	encrypter.XORKeyStream(encrypted, []byte(text))
+	encrypter.XORKeyStream(encrypted, text)
 	return hex.EncodeToString(encrypted), nil
 }
+func EncryptSting(text string, key []byte) (string, error) {
+	return Encrypt([]byte(text), key)
+}
 
-func Decrypt(encrypted string, key []byte) (string, error) {
+func Decrypt(encrypted string, key []byte) ([]byte, error) {
 	var err error
 	defer func() {
 		if e := recover(); e != nil {
@@ -27,16 +30,21 @@ func Decrypt(encrypted string, key []byte) (string, error) {
 	}()
 	src, err := hex.DecodeString(encrypted)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	var iv = key[:aes.BlockSize]
 	decrypted := make([]byte, len(src))
 	var block cipher.Block
 	block, err = aes.NewCipher([]byte(key))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	decrypter := cipher.NewCFBDecrypter(block, iv)
 	decrypter.XORKeyStream(decrypted, src)
-	return string(decrypted), nil
+	return decrypted, nil
+}
+
+func DecryptSting(encrypted string, key []byte) (string, error) {
+	b, e := Decrypt(encrypted, key)
+	return string(b), e
 }
