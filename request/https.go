@@ -15,7 +15,7 @@ type HttpsClient struct {
 	client http.Client
 }
 
-func (this *HttpsClient) Get(url string, ch chan *Result, headers ...*Header) {
+func (this *HttpsClient) Get(url string, headers ...*Header) (resBody []byte, statusCode int, err error) {
 	req, _ := http.NewRequest(http.MethodGet, url, nil)
 	req.Header.Set("User-Agent", "go-mutils/1.0")
 
@@ -23,12 +23,9 @@ func (this *HttpsClient) Get(url string, ch chan *Result, headers ...*Header) {
 		req.Header.Add(head.Key, head.Value)
 	}
 
-	r := &Result{}
 	res, err := this.client.Do(req)
 	if err != nil {
-		r.Error = err
-		ch <- r
-		return
+		return nil, 0, err
 	}
 
 	// if res.TLS != nil {
@@ -39,14 +36,11 @@ func (this *HttpsClient) Get(url string, ch chan *Result, headers ...*Header) {
 	data, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 
-	r.Error = err
-	r.Result = data
-	r.StatusCode = res.StatusCode
+	return data, res.StatusCode, err
 
-	ch <- r
 }
 
-func (this *HttpsClient) Post(url string, body string, ch chan *Result, headers ...*Header) {
+func (this *HttpsClient) Post(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
 	bodyReader := strings.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPost, url, bodyReader)
 
@@ -54,25 +48,18 @@ func (this *HttpsClient) Post(url string, body string, ch chan *Result, headers 
 		req.Header.Set(head.Key, head.Value)
 	}
 
-	r := &Result{}
 	res, err := this.client.Do(req)
 	if err != nil {
-		r.Error = err
-		ch <- r
-		return
+		return nil, 0, err
 	}
 
 	data, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 
-	r.Error = err
-	r.Result = data
-	r.StatusCode = res.StatusCode
-
-	ch <- r
+	return data, res.StatusCode, err
 }
 
-func (this *HttpsClient) Patch(url string, body string, ch chan *Result, headers ...*Header) {
+func (this *HttpsClient) Patch(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
 	bodyReader := strings.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPatch, url, bodyReader)
 
@@ -80,25 +67,18 @@ func (this *HttpsClient) Patch(url string, body string, ch chan *Result, headers
 		req.Header.Set(head.Key, head.Value)
 	}
 
-	r := &Result{}
 	res, err := this.client.Do(req)
 	if err != nil {
-		r.Error = err
-		ch <- r
-		return
+		return nil, 0, err
 	}
 
 	data, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 
-	r.Error = err
-	r.Result = data
-	r.StatusCode = res.StatusCode
-
-	ch <- r
+	return data, res.StatusCode, err
 }
 
-func (this *HttpsClient) Delete(url string, ch chan *Result, headers ...*Header) {
+func (this *HttpsClient) Delete(url string, headers ...*Header) (resBody []byte, statusCode int, err error) {
 	req, _ := http.NewRequest(http.MethodDelete, url, nil)
 	req.Header.Set("User-Agent", "go-mutils/1.0")
 
@@ -106,58 +86,18 @@ func (this *HttpsClient) Delete(url string, ch chan *Result, headers ...*Header)
 		req.Header.Add(head.Key, head.Value)
 	}
 
-	r := &Result{}
 	res, err := this.client.Do(req)
 	if err != nil {
-		r.Error = err
-		ch <- r
-		return
+		return nil, 0, err
 	}
-
-	// if res.TLS != nil {
-	// 	for _, cert := range res.TLS.PeerCertificates {
-	// 	}
-	// }
 
 	data, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 
-	r.Error = err
-	r.Result = data
-	r.StatusCode = res.StatusCode
-
-	ch <- r
+	return data, res.StatusCode, err
 }
 
-func (this *HttpsClient) SyncGet(url string, headers ...*Header) (resBody []byte, statusCode int, err error) {
-	ch := make(chan *Result, 1)
-	go this.Get(url, ch, headers...)
-	res := <-ch
-	return res.Result, res.StatusCode, res.Error
-}
-
-func (this *HttpsClient) SyncPost(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
-	ch := make(chan *Result, 1)
-	go this.Post(url, body, ch, headers...)
-	res := <-ch
-	return res.Result, res.StatusCode, res.Error
-}
-
-func (this *HttpsClient) SyncPatch(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
-	ch := make(chan *Result, 1)
-	go this.Patch(url, body, ch, headers...)
-	res := <-ch
-	return res.Result, res.StatusCode, res.Error
-}
-
-func (this *HttpsClient) SyncDelete(url string, headers ...*Header) (resBody []byte, statusCode int, err error) {
-	ch := make(chan *Result, 1)
-	go this.Delete(url, ch, headers...)
-	res := <-ch
-	return res.Result, res.StatusCode, res.Error
-}
-
-func NewHttpsClientWithByte(certBytes []byte) (*HttpsClient, error) {
+func NewHttpsClientWithByte(certBytes []byte, timeout time.Duration) (*HttpsClient, error) {
 	clientCertPool := x509.NewCertPool()
 
 	ok := clientCertPool.AppendCertsFromPEM(certBytes)
@@ -176,7 +116,6 @@ func NewHttpsClientWithByte(certBytes []byte) (*HttpsClient, error) {
 					RootCAs:            clientCertPool,
 				},
 				Dial: func(network, addr string) (net.Conn, error) {
-					timeout := time.Second * 10
 					return net.DialTimeout(network, addr, timeout)
 				},
 			},
@@ -186,11 +125,11 @@ func NewHttpsClientWithByte(certBytes []byte) (*HttpsClient, error) {
 	return httpClient, nil
 }
 
-func NewHttpsClient(caFile string) (*HttpsClient, error) {
+func NewHttpsClient(caFile string, timeout time.Duration) (*HttpsClient, error) {
 	certBytes, err := ioutil.ReadFile(caFile)
 	if err != nil {
 		return nil, errors.New("Unable to read cert.pem: " + err.Error())
 	}
 
-	return NewHttpsClientWithByte(certBytes)
+	return NewHttpsClientWithByte(certBytes, timeout)
 }
