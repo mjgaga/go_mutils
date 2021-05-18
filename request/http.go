@@ -65,6 +65,24 @@ func (this *HttpClient) Patch(url string, body string, headers ...*Header) (resB
 	return data, res.StatusCode, err
 }
 
+func (this *HttpClient) Put(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	bodyReader := strings.NewReader(body)
+	req, _ := http.NewRequest(http.MethodPut, url, bodyReader)
+	for _, head := range headers {
+		req.Header.Add(head.Key, head.Value)
+	}
+
+	res, err := this.client.Do(req)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	data, err := ioutil.ReadAll(res.Body)
+	res.Body.Close()
+
+	return data, res.StatusCode, err
+}
+
 func (this *HttpClient) Delete(url string, headers ...*Header) (resBody []byte, statusCode int, err error) {
 	req, _ := http.NewRequest(http.MethodDelete, url, nil)
 	for _, head := range headers {
