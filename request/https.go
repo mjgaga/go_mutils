@@ -15,7 +15,7 @@ type HttpsClient struct {
 	client http.Client
 }
 
-func (this *HttpsClient) Get(url string, headers ...*Header) (resBody []byte, statusCode int, err error) {
+func (this *HttpsClient) Get(url string, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
 	req, _ := http.NewRequest(http.MethodGet, url, nil)
 	req.Header.Set("User-Agent", "go-mutils/1.0")
 
@@ -25,7 +25,7 @@ func (this *HttpsClient) Get(url string, headers ...*Header) (resBody []byte, st
 
 	res, err := this.client.Do(req)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, nil, err
 	}
 
 	// if res.TLS != nil {
@@ -36,7 +36,7 @@ func (this *HttpsClient) Get(url string, headers ...*Header) (resBody []byte, st
 	data, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 
-	return data, res.StatusCode, err
+	return data, res.StatusCode, res.Header, err
 
 }
 

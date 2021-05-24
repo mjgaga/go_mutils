@@ -15,7 +15,7 @@ type HttpsClientX509 struct {
 	client http.Client
 }
 
-func (this *HttpsClientX509) Get(url string, headers ...*Header) (resBody []byte, statusCode int, err error) {
+func (this *HttpsClientX509) Get(url string, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
 	req, _ := http.NewRequest(http.MethodGet, url, nil)
 	req.Header.Set("User-Agent", "go-mutils/1.0")
 
@@ -25,13 +25,13 @@ func (this *HttpsClientX509) Get(url string, headers ...*Header) (resBody []byte
 
 	res, err := this.client.Do(req)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, nil, err
 	}
 
 	data, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 
-	return data, res.StatusCode, err
+	return data, res.StatusCode, res.Header, err
 }
 
 func (this *HttpsClientX509) Post(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {

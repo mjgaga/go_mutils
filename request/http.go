@@ -12,7 +12,7 @@ type HttpClient struct {
 	client http.Client
 }
 
-func (this *HttpClient) Get(url string, headers ...*Header) (resBody []byte, statusCode int, err error) {
+func (this *HttpClient) Get(url string, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
 	req, _ := http.NewRequest(http.MethodGet, url, nil)
 	for _, head := range headers {
 		req.Header.Add(head.Key, head.Value)
@@ -20,13 +20,13 @@ func (this *HttpClient) Get(url string, headers ...*Header) (resBody []byte, sta
 
 	res, err := this.client.Do(req)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, nil, err
 	}
 
 	data, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 
-	return data, res.StatusCode, err
+	return data, res.StatusCode, res.Header, err
 }
 
 func (this *HttpClient) Post(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
