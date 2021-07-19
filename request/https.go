@@ -1,13 +1,13 @@
 package request
 
 import (
+	"bytes"
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
 	"io/ioutil"
 	"net"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -40,8 +40,8 @@ func (this *HttpsClient) Get(url string, headers ...*Header) (resBody []byte, st
 
 }
 
-func (this *HttpsClient) Post(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
-	bodyReader := strings.NewReader(body)
+func (this *HttpsClient) Post(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPost, url, bodyReader)
 
 	for _, head := range headers {
@@ -59,8 +59,8 @@ func (this *HttpsClient) Post(url string, body string, headers ...*Header) (resB
 	return data, res.StatusCode, err
 }
 
-func (this *HttpsClient) Patch(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
-	bodyReader := strings.NewReader(body)
+func (this *HttpsClient) Patch(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPatch, url, bodyReader)
 
 	for _, head := range headers {
@@ -78,8 +78,8 @@ func (this *HttpsClient) Patch(url string, body string, headers ...*Header) (res
 	return data, res.StatusCode, err
 }
 
-func (this *HttpsClient) Put(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
-	bodyReader := strings.NewReader(body)
+func (this *HttpsClient) Put(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPut, url, bodyReader)
 
 	for _, head := range headers {
@@ -96,6 +96,7 @@ func (this *HttpsClient) Put(url string, body string, headers ...*Header) (resBo
 
 	return data, res.StatusCode, err
 }
+
 func (this *HttpsClient) Delete(url string, headers ...*Header) (resBody []byte, statusCode int, err error) {
 	req, _ := http.NewRequest(http.MethodDelete, url, nil)
 	req.Header.Set("User-Agent", "go-mutils/1.0")

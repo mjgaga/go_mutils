@@ -1,10 +1,10 @@
 package request
 
 import (
+	"bytes"
 	"io/ioutil"
 	"net"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -29,8 +29,8 @@ func (this *HttpClient) Get(url string, headers ...*Header) (resBody []byte, sta
 	return data, res.StatusCode, res.Header, err
 }
 
-func (this *HttpClient) Post(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
-	bodyReader := strings.NewReader(body)
+func (this *HttpClient) Post(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPost, url, bodyReader)
 	for _, head := range headers {
 		req.Header.Add(head.Key, head.Value)
@@ -47,8 +47,8 @@ func (this *HttpClient) Post(url string, body string, headers ...*Header) (resBo
 	return data, res.StatusCode, err
 }
 
-func (this *HttpClient) Patch(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
-	bodyReader := strings.NewReader(body)
+func (this *HttpClient) Patch(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPatch, url, bodyReader)
 	for _, head := range headers {
 		req.Header.Add(head.Key, head.Value)
@@ -65,8 +65,8 @@ func (this *HttpClient) Patch(url string, body string, headers ...*Header) (resB
 	return data, res.StatusCode, err
 }
 
-func (this *HttpClient) Put(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
-	bodyReader := strings.NewReader(body)
+func (this *HttpClient) Put(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPut, url, bodyReader)
 	for _, head := range headers {
 		req.Header.Add(head.Key, head.Value)

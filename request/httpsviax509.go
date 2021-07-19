@@ -1,13 +1,13 @@
 package request
 
 import (
+	"bytes"
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
 	"io/ioutil"
 	"net"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -34,8 +34,8 @@ func (this *HttpsClientX509) Get(url string, headers ...*Header) (resBody []byte
 	return data, res.StatusCode, res.Header, err
 }
 
-func (this *HttpsClientX509) Post(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
-	bodyReader := strings.NewReader(body)
+func (this *HttpsClientX509) Post(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPost, url, bodyReader)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
@@ -54,8 +54,8 @@ func (this *HttpsClientX509) Post(url string, body string, headers ...*Header) (
 	return data, res.StatusCode, err
 }
 
-func (this *HttpsClientX509) Patch(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
-	bodyReader := strings.NewReader(body)
+func (this *HttpsClientX509) Patch(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPatch, url, bodyReader)
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -75,8 +75,8 @@ func (this *HttpsClientX509) Patch(url string, body string, headers ...*Header) 
 	return data, res.StatusCode, err
 }
 
-func (this *HttpsClientX509) Put(url string, body string, headers ...*Header) (resBody []byte, statusCode int, err error) {
-	bodyReader := strings.NewReader(body)
+func (this *HttpsClientX509) Put(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, err error) {
+	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPut, url, bodyReader)
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
