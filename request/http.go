@@ -15,6 +15,9 @@ type HttpClient struct {
 func (this *HttpClient) Get(url string, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
 	req, _ := http.NewRequest(http.MethodGet, url, nil)
 	for _, head := range headers {
+		if head == nil {
+			continue
+		}
 		req.Header.Add(head.Key, head.Value)
 	}
 
@@ -33,6 +36,9 @@ func (this *HttpClient) Post(url string, body []byte, headers ...*Header) (resBo
 	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPost, url, bodyReader)
 	for _, head := range headers {
+		if head == nil {
+			continue
+		}
 		req.Header.Add(head.Key, head.Value)
 	}
 
@@ -51,6 +57,9 @@ func (this *HttpClient) Patch(url string, body []byte, headers ...*Header) (resB
 	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPatch, url, bodyReader)
 	for _, head := range headers {
+		if head == nil {
+			continue
+		}
 		req.Header.Add(head.Key, head.Value)
 	}
 
@@ -69,6 +78,9 @@ func (this *HttpClient) Put(url string, body []byte, headers ...*Header) (resBod
 	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPut, url, bodyReader)
 	for _, head := range headers {
+		if head == nil {
+			continue
+		}
 		req.Header.Add(head.Key, head.Value)
 	}
 
@@ -86,6 +98,9 @@ func (this *HttpClient) Put(url string, body []byte, headers ...*Header) (resBod
 func (this *HttpClient) Delete(url string, headers ...*Header) (resBody []byte, statusCode int, err error) {
 	req, _ := http.NewRequest(http.MethodDelete, url, nil)
 	for _, head := range headers {
+		if head == nil {
+			continue
+		}
 		req.Header.Add(head.Key, head.Value)
 	}
 

@@ -20,6 +20,9 @@ func (this *HttpsClientX509) Get(url string, headers ...*Header) (resBody []byte
 	req.Header.Set("User-Agent", "go-mutils/1.0")
 
 	for _, head := range headers {
+		if head == nil {
+			continue
+		}
 		req.Header.Add(head.Key, head.Value)
 	}
 
@@ -40,6 +43,9 @@ func (this *HttpsClientX509) Post(url string, body []byte, headers ...*Header) (
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	for _, head := range headers {
+		if head == nil {
+			continue
+		}
 		req.Header.Set(head.Key, head.Value)
 	}
 
@@ -61,6 +67,9 @@ func (this *HttpsClientX509) Patch(url string, body []byte, headers ...*Header) 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	for _, head := range headers {
+		if head == nil {
+			continue
+		}
 		req.Header.Set(head.Key, head.Value)
 	}
 
@@ -82,6 +91,9 @@ func (this *HttpsClientX509) Put(url string, body []byte, headers ...*Header) (r
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	for _, head := range headers {
+		if head == nil {
+			continue
+		}
 		req.Header.Set(head.Key, head.Value)
 	}
 
@@ -101,6 +113,9 @@ func (this *HttpsClientX509) Delete(url string, headers ...*Header) (resBody []b
 	req.Header.Set("User-Agent", "go-mutils/1.0")
 
 	for _, head := range headers {
+		if head == nil {
+			continue
+		}
 		req.Header.Add(head.Key, head.Value)
 	}
 

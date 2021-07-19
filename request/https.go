@@ -20,6 +20,9 @@ func (this *HttpsClient) Get(url string, headers ...*Header) (resBody []byte, st
 	req.Header.Set("User-Agent", "go-mutils/1.0")
 
 	for _, head := range headers {
+		if head == nil {
+			continue
+		}
 		req.Header.Add(head.Key, head.Value)
 	}
 
@@ -45,6 +48,9 @@ func (this *HttpsClient) Post(url string, body []byte, headers ...*Header) (resB
 	req, _ := http.NewRequest(http.MethodPost, url, bodyReader)
 
 	for _, head := range headers {
+		if head == nil {
+			continue
+		}
 		req.Header.Set(head.Key, head.Value)
 	}
 
@@ -64,6 +70,9 @@ func (this *HttpsClient) Patch(url string, body []byte, headers ...*Header) (res
 	req, _ := http.NewRequest(http.MethodPatch, url, bodyReader)
 
 	for _, head := range headers {
+		if head == nil {
+			continue
+		}
 		req.Header.Set(head.Key, head.Value)
 	}
 
@@ -83,6 +92,9 @@ func (this *HttpsClient) Put(url string, body []byte, headers ...*Header) (resBo
 	req, _ := http.NewRequest(http.MethodPut, url, bodyReader)
 
 	for _, head := range headers {
+		if head == nil {
+			continue
+		}
 		req.Header.Set(head.Key, head.Value)
 	}
 
@@ -102,6 +114,9 @@ func (this *HttpsClient) Delete(url string, headers ...*Header) (resBody []byte,
 	req.Header.Set("User-Agent", "go-mutils/1.0")
 
 	for _, head := range headers {
+		if head == nil {
+			continue
+		}
 		req.Header.Add(head.Key, head.Value)
 	}
 
