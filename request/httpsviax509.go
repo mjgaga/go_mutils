@@ -15,6 +15,23 @@ type HttpsClientX509 struct {
 	client http.Client
 }
 
+func (this *HttpsClientX509) Head(url string, headers ...*Header) (statusCode int, header http.Header, err error) {
+	req, _ := http.NewRequest(http.MethodHead, url, nil)
+	for _, head := range headers {
+		if head == nil {
+			continue
+		}
+		req.Header.Add(head.Key, head.Value)
+	}
+
+	res, err := this.client.Do(req)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	return res.StatusCode, res.Header, err
+}
+
 func (this *HttpsClientX509) Get(url string, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
 	req, _ := http.NewRequest(http.MethodGet, url, nil)
 	req.Header.Set("User-Agent", "go-mutils/1.0")
@@ -37,7 +54,7 @@ func (this *HttpsClientX509) Get(url string, headers ...*Header) (resBody []byte
 	return data, res.StatusCode, res.Header, err
 }
 
-func (this *HttpsClientX509) Post(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, err error) {
+func (this *HttpsClientX509) Post(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
 	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPost, url, bodyReader)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -51,16 +68,16 @@ func (this *HttpsClientX509) Post(url string, body []byte, headers ...*Header) (
 
 	res, err := this.client.Do(req)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, nil, err
 	}
 
 	data, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 
-	return data, res.StatusCode, err
+	return data, res.StatusCode, res.Header, err
 }
 
-func (this *HttpsClientX509) Patch(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, err error) {
+func (this *HttpsClientX509) Patch(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
 	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPatch, url, bodyReader)
 
@@ -75,16 +92,16 @@ func (this *HttpsClientX509) Patch(url string, body []byte, headers ...*Header) 
 
 	res, err := this.client.Do(req)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, nil, err
 	}
 
 	data, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 
-	return data, res.StatusCode, err
+	return data, res.StatusCode, res.Header, err
 }
 
-func (this *HttpsClientX509) Put(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, err error) {
+func (this *HttpsClientX509) Put(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
 	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPut, url, bodyReader)
 
@@ -99,16 +116,16 @@ func (this *HttpsClientX509) Put(url string, body []byte, headers ...*Header) (r
 
 	res, err := this.client.Do(req)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, nil, err
 	}
 
 	data, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 
-	return data, res.StatusCode, err
+	return data, res.StatusCode, res.Header, err
 }
 
-func (this *HttpsClientX509) Delete(url string, headers ...*Header) (resBody []byte, statusCode int, err error) {
+func (this *HttpsClientX509) Delete(url string, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
 	req, _ := http.NewRequest(http.MethodDelete, url, nil)
 	req.Header.Set("User-Agent", "go-mutils/1.0")
 
@@ -121,13 +138,13 @@ func (this *HttpsClientX509) Delete(url string, headers ...*Header) (resBody []b
 
 	res, err := this.client.Do(req)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, nil, err
 	}
 
 	data, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 
-	return data, res.StatusCode, err
+	return data, res.StatusCode, res.Header, err
 }
 
 func NewHttpsClientX509WithBytes(caBytes, certBytes, keyData []byte, timeout time.Duration) (*HttpsClientX509, error) {
