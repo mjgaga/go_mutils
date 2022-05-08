@@ -162,6 +162,7 @@ func NewHttpsClientX509WithBytes(caBytes, certBytes, keyData []byte, timeout tim
 			// 	return http.ErrUseLastResponse
 			// },
 			Transport: &http.Transport{
+				DisableKeepAlives: true,
 				TLSClientConfig: &tls.Config{
 					InsecureSkipVerify: false,
 					RootCAs:            clientCertPool,

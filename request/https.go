@@ -161,6 +161,7 @@ func NewHttpsClientWithByte(certBytes []byte, timeout time.Duration) (*HttpsClie
 			// 	return http.ErrUseLastResponse
 			// },
 			Transport: &http.Transport{
+				DisableKeepAlives: true,
 				TLSClientConfig: &tls.Config{
 					InsecureSkipVerify: false,
 					RootCAs:            clientCertPool,

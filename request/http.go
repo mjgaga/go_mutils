@@ -139,6 +139,7 @@ func NewHttpClient(timeout time.Duration) *HttpClient {
 			// 	return http.ErrUseLastResponse
 			// },
 			Transport: &http.Transport{
+				DisableKeepAlives: true,
 				Dial: func(network, addr string) (net.Conn, error) {
 					return net.DialTimeout(network, addr, timeout)
 				},
