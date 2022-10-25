@@ -2,18 +2,18 @@ package request
 
 import (
 	"bytes"
+	"context"
 	"io/ioutil"
-	"net"
 	"net/http"
-	"time"
 )
 
 type HttpClient struct {
 	client http.Client
 }
 
-func (this *HttpClient) Head(url string, headers ...*Header) (statusCode int, header http.Header, err error) {
+func (client *HttpClient) Head(ctx context.Context, url string, headers ...*Header) (statusCode int, header http.Header, err error) {
 	req, _ := http.NewRequest(http.MethodHead, url, nil)
+	req = req.WithContext(ctx)
 	for _, head := range headers {
 		if head == nil {
 			continue
@@ -21,7 +21,7 @@ func (this *HttpClient) Head(url string, headers ...*Header) (statusCode int, he
 		req.Header.Add(head.Key, head.Value)
 	}
 
-	res, err := this.client.Do(req)
+	res, err := client.client.Do(req)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -29,8 +29,9 @@ func (this *HttpClient) Head(url string, headers ...*Header) (statusCode int, he
 	return res.StatusCode, res.Header, err
 }
 
-func (this *HttpClient) Get(url string, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
+func (client *HttpClient) Get(ctx context.Context, url string, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
 	req, _ := http.NewRequest(http.MethodGet, url, nil)
+	req = req.WithContext(ctx)
 	for _, head := range headers {
 		if head == nil {
 			continue
@@ -38,7 +39,7 @@ func (this *HttpClient) Get(url string, headers ...*Header) (resBody []byte, sta
 		req.Header.Add(head.Key, head.Value)
 	}
 
-	res, err := this.client.Do(req)
+	res, err := client.client.Do(req)
 	if err != nil {
 		return nil, 0, nil, err
 	}
@@ -49,9 +50,10 @@ func (this *HttpClient) Get(url string, headers ...*Header) (resBody []byte, sta
 	return data, res.StatusCode, res.Header, err
 }
 
-func (this *HttpClient) Post(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
+func (client *HttpClient) Post(ctx context.Context, url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
 	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPost, url, bodyReader)
+
 	for _, head := range headers {
 		if head == nil {
 			continue
@@ -59,7 +61,7 @@ func (this *HttpClient) Post(url string, body []byte, headers ...*Header) (resBo
 		req.Header.Add(head.Key, head.Value)
 	}
 
-	res, err := this.client.Do(req)
+	res, err := client.client.Do(req)
 	if err != nil {
 		return nil, 0, nil, err
 	}
@@ -70,9 +72,10 @@ func (this *HttpClient) Post(url string, body []byte, headers ...*Header) (resBo
 	return data, res.StatusCode, res.Header, err
 }
 
-func (this *HttpClient) Patch(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
+func (client *HttpClient) Patch(ctx context.Context, url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
 	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPatch, url, bodyReader)
+	req = req.WithContext(ctx)
 	for _, head := range headers {
 		if head == nil {
 			continue
@@ -80,7 +83,7 @@ func (this *HttpClient) Patch(url string, body []byte, headers ...*Header) (resB
 		req.Header.Add(head.Key, head.Value)
 	}
 
-	res, err := this.client.Do(req)
+	res, err := client.client.Do(req)
 	if err != nil {
 		return nil, 0, nil, err
 	}
@@ -91,9 +94,11 @@ func (this *HttpClient) Patch(url string, body []byte, headers ...*Header) (resB
 	return data, res.StatusCode, res.Header, err
 }
 
-func (this *HttpClient) Put(url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
+func (client *HttpClient) Put(ctx context.Context, url string, body []byte, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
 	bodyReader := bytes.NewReader(body)
 	req, _ := http.NewRequest(http.MethodPut, url, bodyReader)
+	req = req.WithContext(ctx)
+
 	for _, head := range headers {
 		if head == nil {
 			continue
@@ -101,7 +106,7 @@ func (this *HttpClient) Put(url string, body []byte, headers ...*Header) (resBod
 		req.Header.Add(head.Key, head.Value)
 	}
 
-	res, err := this.client.Do(req)
+	res, err := client.client.Do(req)
 	if err != nil {
 		return nil, 0, nil, err
 	}
@@ -112,8 +117,9 @@ func (this *HttpClient) Put(url string, body []byte, headers ...*Header) (resBod
 	return data, res.StatusCode, res.Header, err
 }
 
-func (this *HttpClient) Delete(url string, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
+func (client *HttpClient) Delete(ctx context.Context, url string, headers ...*Header) (resBody []byte, statusCode int, header http.Header, err error) {
 	req, _ := http.NewRequest(http.MethodDelete, url, nil)
+	req = req.WithContext(ctx)
 	for _, head := range headers {
 		if head == nil {
 			continue
@@ -121,7 +127,7 @@ func (this *HttpClient) Delete(url string, headers ...*Header) (resBody []byte, 
 		req.Header.Add(head.Key, head.Value)
 	}
 
-	res, err := this.client.Do(req)
+	res, err := client.client.Do(req)
 	if err != nil {
 		return nil, 0, nil, err
 	}
@@ -132,7 +138,7 @@ func (this *HttpClient) Delete(url string, headers ...*Header) (resBody []byte, 
 	return data, res.StatusCode, res.Header, err
 }
 
-func NewHttpClient(timeout time.Duration) *HttpClient {
+func NewHttpClient() *HttpClient {
 	return &HttpClient{
 		client: http.Client{
 			// CheckRedirect: func(req *http.Request, via []*http.Request) error {
@@ -140,9 +146,6 @@ func NewHttpClient(timeout time.Duration) *HttpClient {
 			// },
 			Transport: &http.Transport{
 				DisableKeepAlives: true,
-				Dial: func(network, addr string) (net.Conn, error) {
-					return net.DialTimeout(network, addr, timeout)
-				},
 			},
 		},
 	}
