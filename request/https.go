@@ -151,7 +151,7 @@ func (client *HttpsClient) Delete(ctx context.Context, url string, headers ...*H
 	return data, res.StatusCode, res.Header, err
 }
 
-func NewHttpsClientWithByte(certBytes []byte) (*HttpsClient, error) {
+func NewHttpsClientWithByte(certBytes []byte, insecureSkipVerify bool) (*HttpsClient, error) {
 	clientCertPool := x509.NewCertPool()
 
 	ok := clientCertPool.AppendCertsFromPEM(certBytes)
@@ -167,7 +167,7 @@ func NewHttpsClientWithByte(certBytes []byte) (*HttpsClient, error) {
 			Transport: &http.Transport{
 				DisableKeepAlives: true,
 				TLSClientConfig: &tls.Config{
-					InsecureSkipVerify: false,
+					InsecureSkipVerify: insecureSkipVerify,
 					RootCAs:            clientCertPool,
 				},
 			},
@@ -177,11 +177,11 @@ func NewHttpsClientWithByte(certBytes []byte) (*HttpsClient, error) {
 	return httpClient, nil
 }
 
-func NewHttpsClient(caFile string) (*HttpsClient, error) {
+func NewHttpsClient(caFile string, insecureSkipVerify bool) (*HttpsClient, error) {
 	certBytes, err := ioutil.ReadFile(caFile)
 	if err != nil {
 		return nil, errors.New("Unable to read cert.pem: " + err.Error())
 	}
 
-	return NewHttpsClientWithByte(certBytes)
+	return NewHttpsClientWithByte(certBytes, insecureSkipVerify)
 }
