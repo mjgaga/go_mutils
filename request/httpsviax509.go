@@ -146,7 +146,7 @@ func (client *HttpsClientX509) Delete(ctx context.Context, url string, headers .
 	return data, res.StatusCode, res.Header, err
 }
 
-func NewHttpsClientX509WithBytes(caBytes, certBytes, keyData []byte) (*HttpsClientX509, error) {
+func NewHttpsClientX509WithBytes(caBytes, certBytes, keyData []byte, insecureSkipVerify bool) (*HttpsClientX509, error) {
 	clientCertPool := x509.NewCertPool()
 	if ok := clientCertPool.AppendCertsFromPEM(caBytes); !ok {
 		return nil, errors.New("failed to parse root certificate")
@@ -163,7 +163,7 @@ func NewHttpsClientX509WithBytes(caBytes, certBytes, keyData []byte) (*HttpsClie
 			Transport: &http.Transport{
 				DisableKeepAlives: true,
 				TLSClientConfig: &tls.Config{
-					InsecureSkipVerify: false,
+					InsecureSkipVerify: insecureSkipVerify,
 					RootCAs:            clientCertPool,
 					Certificates:       []tls.Certificate{cert},
 				},
@@ -174,7 +174,7 @@ func NewHttpsClientX509WithBytes(caBytes, certBytes, keyData []byte) (*HttpsClie
 	return httpClient, nil
 }
 
-func NewHttpsClientX509(caFile, certFile, keyFile string) (*HttpsClientX509, error) {
+func NewHttpsClientX509(caFile, certFile, keyFile string, insecureSkipVerify bool) (*HttpsClientX509, error) {
 	certBytes, err := ioutil.ReadFile(caFile)
 	if err != nil {
 		return nil, errors.New("Unable to read cert.pem: " + err.Error())
@@ -195,5 +195,5 @@ func NewHttpsClientX509(caFile, certFile, keyFile string) (*HttpsClientX509, err
 	if err != nil {
 		return nil, err
 	}
-	return NewHttpsClientX509WithBytes(certBytes, certPEMBlock, keyPEMBlock)
+	return NewHttpsClientX509WithBytes(certBytes, certPEMBlock, keyPEMBlock, insecureSkipVerify)
 }
